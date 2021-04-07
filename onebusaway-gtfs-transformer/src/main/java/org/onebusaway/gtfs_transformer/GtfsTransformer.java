@@ -39,6 +39,7 @@ import org.onebusaway.gtfs.services.GtfsRelationalDao;
 import org.onebusaway.gtfs_transformer.factory.TransformFactory;
 import org.onebusaway.gtfs_transformer.services.GtfsEntityTransformStrategy;
 import org.onebusaway.gtfs_transformer.services.GtfsTransformStrategy;
+import org.onebusaway.gtfs_transformer.services.SchemaUpdateStrategy;
 import org.onebusaway.gtfs_transformer.services.TransformContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class GtfsTransformer {
   private List<GtfsTransformStrategy> _transformStrategies = new ArrayList<GtfsTransformStrategy>();
 
   private List<GtfsEntityTransformStrategy> _entityTransformStrategies = new ArrayList<GtfsEntityTransformStrategy>();
+
+  private List<SchemaUpdateStrategy> _outputSchemaUpdates = new ArrayList<SchemaUpdateStrategy>();
 
   private TransformContext _context = new TransformContext();
 
@@ -109,6 +112,10 @@ public class GtfsTransformer {
 
   public void addEntityTransform(GtfsEntityTransformStrategy entityTransform) {
     _entityTransformStrategies.add(entityTransform);
+  }
+
+  public void addOutputSchemaUpdate(SchemaUpdateStrategy outputSchemaUpdate) {
+    _outputSchemaUpdates.add(outputSchemaUpdate);
   }
 
   public void addParameter(String key, Object value) {
@@ -179,14 +186,6 @@ public class GtfsTransformer {
     if (!_entityTransformStrategies.isEmpty())
       dao = new DaoInterceptor(_dao);
 
-
-    DefaultEntitySchemaFactory schemaFactory = new DefaultEntitySchemaFactory();
-    schemaFactory.addFactory(GtfsEntitySchemaFactory.createEntitySchemaFactory());
-
-    _transformStrategies.forEach(s -> s.updateReadSchema(schemaFactory));
-
-    _reader.setEntitySchemaFactory(schemaFactory);
-
     _reader.setEntityStore(dao);
 
     if (_agencyId != null)
@@ -249,7 +248,8 @@ public class GtfsTransformer {
     DefaultEntitySchemaFactory schemaFactory = new DefaultEntitySchemaFactory();
     schemaFactory.addFactory(GtfsEntitySchemaFactory.createEntitySchemaFactory());
 
-    _transformStrategies.forEach(s -> s.updateWriteSchema(schemaFactory));
+    for (SchemaUpdateStrategy strategy : _outputSchemaUpdates)
+      strategy.updateSchema(schemaFactory);
 
     _writer.setEntitySchemaFactory(schemaFactory);
 

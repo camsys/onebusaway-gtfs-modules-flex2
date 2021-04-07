@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Before;
@@ -40,13 +39,13 @@ public class EntityRetentionGraphTest {
   private EntityRetentionGraph _graph;
 
   @Before
-  public void setup() throws IOException, URISyntaxException {
+  public void setup() throws IOException {
     _dao = new GtfsRelationalDaoImpl();
     _graph = new EntityRetentionGraph(_dao);
 
     GtfsReader reader = new GtfsReader();
     File path = new File(getClass().getResource(
-        "/org/onebusaway/gtfs_transformer/testagency").toURI());
+        "/org/onebusaway/gtfs_transformer/testagency").getPath());
     reader.setInputLocation(path);
     reader.setEntityStore(_dao);
     reader.run();

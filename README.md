@@ -12,7 +12,7 @@ In your `pom.xml`, include:
 <repositories>
 	<repository>
 		<id>public.onebusaway.org</id>
-		<url>https://repo.camsys-apps.com/releases/</url>
+		<url>http://nexus.onebusaway.org/content/groups/public/</url>
 	</repository>
 </repositories>
 ~~~
@@ -23,7 +23,7 @@ In your `pom.xml`, include:
 <dependency>
 	<groupId>org.onebusaway</groupId>
 	<artifactId>onebusaway-gtfs</artifactId>
-	<version>1.3.88</version>
+	<version>1.3.9</version>
 </dependency>
 ~~~
 
